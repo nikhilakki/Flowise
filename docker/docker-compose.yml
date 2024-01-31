@@ -1,33 +1,49 @@
-version: '3.1'
-
+version: '3.9'
 services:
-    flowise:
-        image: flowiseai/flowise
-        restart: always
-        environment:
-            - PORT=${PORT}
-            - CORS_ORIGINS=${CORS_ORIGINS}
-            - IFRAME_ORIGINS=${IFRAME_ORIGINS}
-            - FLOWISE_USERNAME=${FLOWISE_USERNAME}
-            - FLOWISE_PASSWORD=${FLOWISE_PASSWORD}
-            - DEBUG=${DEBUG}
-            - DATABASE_PATH=${DATABASE_PATH}
-            - DATABASE_TYPE=${DATABASE_TYPE}
-            - DATABASE_PORT=${DATABASE_PORT}
-            - DATABASE_HOST=${DATABASE_HOST}
-            - DATABASE_NAME=${DATABASE_NAME}
-            - DATABASE_USER=${DATABASE_USER}
-            - DATABASE_PASSWORD=${DATABASE_PASSWORD}
-            - DATABASE_SSL=${DATABASE_SSL}
-            - DATABASE_SSL_KEY_BASE64=${DATABASE_SSL_KEY_BASE64}
-            - APIKEY_PATH=${APIKEY_PATH}
-            - SECRETKEY_PATH=${SECRETKEY_PATH}
-            - FLOWISE_SECRETKEY_OVERWRITE=${FLOWISE_SECRETKEY_OVERWRITE}
-            - LOG_LEVEL=${LOG_LEVEL}
-            - LOG_PATH=${LOG_PATH}
-            - DISABLE_FLOWISE_TELEMETRY=${DISABLE_FLOWISE_TELEMETRY}
-        ports:
-            - '${PORT}:${PORT}'
-        volumes:
-            - ~/.flowise:/root/.flowise
-        command: /bin/sh -c "sleep 3; flowise start"
+  flowise:
+    image: flowiseai/flowise
+    restart: always
+    environment:
+      - PORT=${PORT}
+      - CORS_ORIGINS=${CORS_ORIGINS}
+      - IFRAME_ORIGINS=${IFRAME_ORIGINS}
+      - FLOWISE_USERNAME=${FLOWISE_USERNAME}
+      - FLOWISE_PASSWORD=${FLOWISE_PASSWORD}
+      - DEBUG=${DEBUG}
+      - DATABASE_PATH=${DATABASE_PATH}
+      - DATABASE_TYPE=${DATABASE_TYPE}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_SSL=${DATABASE_SSL}
+      - DATABASE_SSL_KEY_BASE64=${DATABASE_SSL_KEY_BASE64}
+      - APIKEY_PATH=${APIKEY_PATH}
+      - SECRETKEY_PATH=${SECRETKEY_PATH}
+      - FLOWISE_SECRETKEY_OVERWRITE=${FLOWISE_SECRETKEY_OVERWRITE}
+      - LOG_LEVEL=${LOG_LEVEL}
+      - LOG_PATH=${LOG_PATH}
+      - DISABLE_FLOWISE_TELEMETRY=${DISABLE_FLOWISE_TELEMETRY}
+    ports:
+      - '${PORT}:${PORT}'
+    volumes:
+      - ~/.flowise:/root/.flowise
+    command: /bin/sh -c "sleep 3; flowise start"
+    networks:
+      - default
+  postgres:
+    image: postgres:16-alpine
+    expose:
+      - 5432
+    restart: always
+    environment:
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+    volumes:
+      - ${DATABASE_PATH}:/var/lib/postgresql/data
+    networks:
+      - default
+networks:
+  default:
